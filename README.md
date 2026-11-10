@@ -88,12 +88,13 @@
 ## 快速开始
 
 ```bash
-# 1. 安装（用 link:，不是 file: —— 原因见「开发」一节）
+# 从 npm 安装（推荐）
+dsh plugin --profile <profile> add dsh-random-wake
+
+# 或从本地源码安装（开发时用 link:，不是 file: —— 原因见「开发」一节）
 dsh plugin --profile <profile> add link:/absolute/path/to/dsh-random-wake
 
-# 2. 确认 profile 的 dsh.profile.bundles 含 "dsh-random-wake"
-
-# 3. 重启 DSH
+# 然后确认 profile 的 dsh.profile.bundles 含 "dsh-random-wake"，重启 DSH
 ```
 
 打开右侧栏 →「**随机唤醒**」→ 粘贴会话 ID 或点「用当前会话」→「添加」→ 点「参数」选一个预设。
@@ -296,7 +297,7 @@ if (Math.floor(Math.random() * 100) >= probabilityPct) return skip('probability'
     {
       "id": "t-m3k2a-9x2p1",
       "sessionId": "session-1a2b3c4d-...",
-      "label": "老张（备注名）",
+      "label": "会话 A",
       "enabled": true,
       "intervalMinutes": 30,
       "jitterPct": 40,

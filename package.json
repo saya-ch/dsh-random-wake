@@ -1,5 +1,5 @@
 {
-  "name": "@saya-ch/dsh-random-wake",
+  "name": "dsh-random-wake",
   "version": "0.2.0",
   "description": "随机唤醒 — 按外部节律唤醒已有会话的 DeepSeek Harness 插件：时间由宿主按基准间隔加随机浮动排出，是否触发由宿主代码掷骰决定，判否时不调用模型。",
   "type": "module",
@@ -56,8 +56,5 @@
         "@deepseek-ai/dsh-client-ui-renderer"
       ]
     }
-  },
-  "publishConfig": {
-    "access": "public"
   }
 }
