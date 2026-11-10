@@ -295,8 +295,8 @@ if (Math.floor(Math.random() * 100) >= probabilityPct) return skip('probability'
   "targets": [
     {
       "id": "t-m3k2a-9x2p1",
-      "sessionId": "qqb-p-2065586050-...",
-      "label": "老张",
+      "sessionId": "session-1a2b3c4d-...",
+      "label": "老张（备注名）",
       "enabled": true,
       "intervalMinutes": 30,
       "jitterPct": 40,
