@@ -1,0 +1,5 @@
+# dsh-random-wake — bundle patch layer: one insert row; listing this package in
+# the profile's dsh.profile.bundles applies the whole layer.
+- insert:
+    - id: dsh-random-wake
+      name: dsh-random-wake

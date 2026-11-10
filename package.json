@@ -1,0 +1,60 @@
+{
+  "name": "dsh-random-wake",
+  "version": "0.2.0",
+  "description": "随机唤醒 — 按外部节律唤醒已有会话的 DeepSeek Harness 插件：时间由宿主按基准间隔加随机浮动排出，是否触发由宿主代码掷骰决定，判否时不调用模型。",
+  "type": "module",
+  "main": "index.js",
+  "license": "MIT",
+  "author": "saya-ch",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/saya-ch/dsh-random-wake.git"
+  },
+  "homepage": "https://github.com/saya-ch/dsh-random-wake#readme",
+  "bugs": {
+    "url": "https://github.com/saya-ch/dsh-random-wake/issues"
+  },
+  "keywords": [
+    "dsh-plugin",
+    "dsh",
+    "deepseek-harness",
+    "deepseek",
+    "wake",
+    "random",
+    "schedule",
+    "proactive",
+    "probability",
+    "heartbeat"
+  ],
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "dsh": ">=0.2.0-rc.2 <0.3.0-0",
+    "node": ">=22"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-sidebar-right",
+        "@deepseek-ai/dsh-client-ui-session",
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-renderer"
+      ]
+    }
+  }
+}
