@@ -379,6 +379,11 @@ export function apply(ctx) {
         // Resume with the session's own composition: without the preset join the
         // cold agent resolves against the empty global layer, so every preset
         // tool the session normally has would answer "unknown tool" mid-wake.
+        //
+        // Deliberately NO agentOptions: the agent's model selection is read from
+        // the session's own `modelSelection` projection (pending, then lastUsed,
+        // then options). Passing provider/model here would override the choice
+        // the session already made, which is exactly what a wake must not do.
         handle = await ctx.agents.resume({
           resumeSessionId: sessionId,
           setup: (agentCtx, resumed) => composeResumed(agentCtx, resumed),
