@@ -120,10 +120,12 @@ dsh plugin --profile <profile> add link:/absolute/path/to/dsh-random-wake
 
 通过之后：
 
-1. 目标会话没在跑就 `agents.resume()` 冷启动它
+1. 目标会话没在跑就 `agents.resume()` 冷启动它，**并把它自己的 preset 组合挂回去**
 2. 有未结束的回合则让开（`target-busy`），不打断正在生成的回答
 3. 投递一条 **`form: "notice"` 的 user 消息** —— GUI 里显示为提示条，**不是伪造的用户发言**
 4. 等这一轮跑完，释放句柄
+
+> **为什么 resume 还要挂 preset**：DSH 的 agent 工具面来自 preset。一个没有 join 任何 preset 的 agent 只解析「全局层」，也就是只有 host-plane 注册的工具 —— `read` / `write` / `pwsh` / `web_search` 这些 preset 工具全部变成 *unknown tool*。冷唤醒必须像 web host 的 `composeAgent` 一样，从会话的 `agent-preset/selected` 事件（没有则退回 header）取出它原本的 preset 再 `mount()`，否则唤醒出来的会话是残废的。
 
 模型收到的是一条**自我唤醒**的框架消息：
 
@@ -432,6 +434,7 @@ dsh plugin --profile <profile> add link:/absolute/path/to/dsh-random-wake
 
 - **运行时状态不持久**：今日次数、下次时间、最近记录都在内存，重启归零
 - **只唤醒已有会话**：不支持 fork / 新建会话
+- **唤醒轮沿用会话自己的 preset，但不切换模型**：模型选择走宿主默认（`agent-default-model`），若该会话原本手动选了别的模型，唤醒轮可能不是同一个
 - **不折叠上下文**：每次真实唤醒的完整交换都留在会话上下文。高频（< 15 分钟）要自己留意窗口增长
 - **静默时段只按时间判断**：不区分工作日/周末。"上班时段"预设下班后静默，但周六周日照常运行
 - **未验证更高版本**：只在 DSH `0.2.2-rc.1` 上跑过

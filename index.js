@@ -164,6 +164,52 @@ export function apply(ctx) {
       return undefined
     }
   })()
+  // The preset roster is what gives a resumed agent its tools. Without it a
+  // cold-resumed session resolves against the EMPTY global layer and sees only
+  // host-plane registrations — every preset tool (read/write/pwsh/web_search…)
+  // answers "unknown tool". Optional: a rosterless profile simply stays bare.
+  const presets = (() => {
+    try {
+      return ctx.get('agentPresets', false)
+    } catch {
+      return undefined
+    }
+  })()
+  if (presets === undefined) {
+    ctx.logger?.warn?.(`[${PLUGIN}] ctx.agentPresets unavailable; a cold wake will run without the session's preset tools`)
+  }
+
+  /**
+   * The live Session log surface across host lines: some expose `.events`,
+   * others only `snapshotEvents()`. A session still being created has none.
+   */
+  function sessionLogOf(session) {
+    if (Array.isArray(session?.events)) return session.events
+    if (typeof session?.snapshotEvents === 'function') return session.snapshotEvents()
+    return []
+  }
+
+  /** The preset a session actually ran under: latest selection event, else header. */
+  function resolveSessionPresetOf({ header, events }) {
+    for (let index = events.length - 1; index >= 0; index -= 1) {
+      const event = events[index]
+      if (event?.type === 'agent-preset/selected') return event.data?.agentPreset
+    }
+    return header?.agentPreset
+  }
+
+  /**
+   * Join a resumed agent to its own preset, exactly like the web host's
+   * composeAgent. This is the difference between a wake that keeps every tool
+   * the session had and one that wakes up crippled.
+   */
+  async function composeResumed(agentCtx, agent) {
+    if (presets === undefined) return
+    const log = sessionLogOf(agent.session)
+    const presetId = resolveSessionPresetOf({ header: agent.session.header, events: log })
+    if (presetId === undefined || presetId === null) return
+    await presets.mount(agentCtx, presetId)
+  }
 
   /** sessionId -> { title, at }; cold sessions cost one log read per TTL. */
   const titleCache = new Map()
@@ -330,7 +376,13 @@ export function apply(ctx) {
         return { ok: false, reason: 'target-busy' }
       }
       if (agent === undefined) {
-        handle = await ctx.agents.resume({ resumeSessionId: sessionId })
+        // Resume with the session's own composition: without the preset join the
+        // cold agent resolves against the empty global layer, so every preset
+        // tool the session normally has would answer "unknown tool" mid-wake.
+        handle = await ctx.agents.resume({
+          resumeSessionId: sessionId,
+          setup: (agentCtx, resumed) => composeResumed(agentCtx, resumed),
+        })
         agent = handle.agent
       }
       if (idleGuard > 0 && manual !== true) {
