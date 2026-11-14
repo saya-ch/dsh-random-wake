@@ -125,13 +125,19 @@ dsh plugin --profile <profile> add link:/absolute/path/to/dsh-random-wake
 3. 投递一条 **`form: "notice"` 的 user 消息** —— GUI 里显示为提示条，**不是伪造的用户发言**
 4. 等这一轮跑完，释放句柄
 
-模型收到的是一个明确的框架消息，开头就写着：
+模型收到的是一条**自我唤醒**的框架消息：
 
 ```
-[dsh-random-wake wake 2026-11-10 23:55]
-Host-scheduled wake: the user did NOT send this.
-过了一段时间了，给他说句话吧~
+[self-wake 2026-11-14 19:57]
+This is not a message from the user. You woke up on your own — something crossed your mind and you felt like saying it.
+没什么事发生，是你自己忽然想起了他。想说什么就自然开口，不想说就安静结束本回合，不要输出任何文字。
 ```
+
+要点：
+
+- **不伪造用户发言** —— 第二行明确写着"这不是用户发来的消息"，所以模型不会把它误读成你主动开口
+- **但语义是"自己想动了"** —— 不写"宿主定时唤醒"这类机械措辞，而是把这一刻框定成角色自己忽然想起对方
+- 时间戳只保留 `self-wake` 标记和本地时间，供模型判断"现在几点"，不暴露调度细节
 
 然后它**自己决定说还是不说** —— 不想说就直接结束回合，不输出任何文字。这一层是自由的：插件只管"什么时候叫醒"，不管"叫醒之后说什么"。
 

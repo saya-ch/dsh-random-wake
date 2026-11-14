@@ -44,8 +44,8 @@ const DEFAULTS = {
   cooldownMinutes: 30,
   idleGuardMinutes: 0,
   prompt:
-    '这是一次宿主定时唤醒（不是用户发的消息）。按你当前的人设和处境，决定是否要主动说点什么。' +
-    '不想说就正常结束本回合，不要输出任何文字；想说就自然地开口。',
+    '没什么事发生，是你自己忽然想起了他。想说什么就自然开口，' +
+    '不想说就安静结束本回合，不要输出任何文字。',
 }
 
 function homeDir() {
@@ -284,8 +284,8 @@ export function apply(ctx) {
   function buildMessage(target) {
     const now = new Date()
     const text = [
-      `[${PLUGIN} wake ${localDateKey(now)} ${digits(now.getHours())}:${digits(now.getMinutes())}]`,
-      'Host-scheduled wake: the user did NOT send this.',
+      `[self-wake ${localDateKey(now)} ${digits(now.getHours())}:${digits(now.getMinutes())}]`,
+      'This is not a message from the user. You woke up on your own — something crossed your mind and you felt like saying it.',
       target.prompt,
     ].join('\n')
     return {
@@ -294,7 +294,7 @@ export function apply(ctx) {
       source: {
         kind: `plugin:${PLUGIN}`,
         form: 'notice',
-        summary: `${PLUGIN} wake`,
+        summary: '自己想起',
       },
     }
   }
